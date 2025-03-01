@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Enrollment System </title>
+    <link rel="stylesheet" href="from best.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2 style="color: blue;background-color: chartreuse;border: 50%;">Student Enrollment System by Getahun</h2>
+        <form id="enrollmentForm">
+            <label for="name">Student Name:</label>
+            <input type="text" id="name" required>
+
+            <label for="id">Student ID:</label>
+            <input type="text" id="id" required>
+
+            <label for="course">Course:</label>
+            <input type="text" id="course" required>
+            <label for="e-mail">E-mail:</label>
+            <input type="e-mail" placeholder="getahunalemu@gmail.com">
+            <label for="password">
+                password:
+            </label>
+            <input type="password" placeholder="enter e-mail password" required>
+            <label for="gender">Gender:</label>
+            <select style="border: 3px;background-color: chartreuse;color: blueviolet;" name="" id="gen">
+
+                <option style="color: blue;box-shadow: 0cap;border-style: double;:hover{ color: gold; };"
+                    value="select">select sex</option required>
+
+                <option id="ma" value="radio">male </option><br>
+                <option id="fe" value="radio">female</option><br>
+                <option id="bo" value="radio">both</option>
+
+
+
+            </select>
+
+            <button type="submit">Enroll Student and must be in Injibara University</button>
+        </form>
+
+        <h2>Enrolled Students</h2>
+        <ul id="studentList"></ul>
+
+        <button id="downloadBtn">Download Enrolled Students</button>
+    </div>
+
+    <script>
+        // Load students from localStorage when the page loads
+        document.addEventListener('DOMContentLoaded', loadStudents);
+
+        // Handle form submission
+        document.getElementById('enrollmentForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Get form values
+            const name = document.getElementById('name').value;
+            const id = document.getElementById('id').value;
+            const course = document.getElementById('course').value;
+            const gender = document.getElementById('gen').value;
+            const male = document.getElementById('ma').value;
+            const female = document.getElementById('fe').value;
+            const both = document.getElementById('bo').value;            // Create student object
+            const student = {
+                name: name,
+                id: id,
+                course: course,
+                gender: gen,
+                male: ma,
+                female: fe,
+                both: bo
+
+            };
+
+            // Save to localStorage
+            saveStudent(student);
+
+            // Clear form
+            this.reset();
+
+            // Reload student list
+            loadStudents();
+        });
+
+        // Function to save student to localStorage
+        function saveStudent(student) {
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+            students.push(student);
+            localStorage.setItem('students', JSON.stringify(students));
+        }
+
+        // Function to load and display students
+        function loadStudents() {
+            const studentList = document.getElementById('studentList');
+            studentList.innerHTML = ''; // Clear current list
+
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+
+            students.forEach(student => {
+                const li = document.createElement('li');
+                li.textContent = `${student.name} (ID: ${student.id}) - Course: ${student.course}(gender:${student.gen} )`;
+                studentList.appendChild(li);
+            });
+        }
+
+        // Handle download button click
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+
+            if (students.length === 0) {
+                alert('No students enrolled to download!');
+                return;
+            }
+
+            // Create a JSON blob
+            const dataStr = JSON.stringify(students, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            // Create a temporary link to download the file
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'enrolled_students.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+
+</html>
